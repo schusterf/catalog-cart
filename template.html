@@ -1,0 +1,106 @@
+<div ng-if="c.data.cartItems.length > 0">
+  <div class="panel panel-primary b">
+    <h1 class="padder-md h3 m-t-sm">${Your Cart}</h1>
+    <table id="cart" class="table table-hover b-t table-condensed cart-table">
+      <thead>
+        <tr>
+          <th class="col-sm-6 wrapper padder-md">${Item}</th>
+          <th class="col-sm-2 wrapper hidden-xs">${Price}</th>
+          <th class="col-sm-1 wrapper hidden-xs">${Quantity}</th>
+          <th class="col-sm-2 wrapper hidden-xs">${Subtotal}</th>
+          <th class="col-sm-1"><span style="visibility: hidden;">${Item Controls}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="item-row b-b" ng-repeat="item in c.data.cartItems track by item.sys_id">
+          <td data-th="Product" class="col-sm-7 col-xs-11 wrapper-md break-word">
+            <div class="row">
+              <div class="col-sm-3 col-xs-4">
+                <a ng-href="?id=sc_cat_item&sys_id={{::item.sys_id}}&edit=cart">
+                  <img ng-show="item.picture" ng-src="{{::item.picture}}" alt="{{::item.name}}" class="img-responsive item-image"/>
+                </a>
+              </div>
+              <div class="col-sm-9 col-xs-8">
+                <h2 class="nomargin h4"><a ng-href="?id=sc_cat_item&sys_id={{::item.sys_id}}&edit=cart">{{::item.name}}</a></h2>
+                <p>{{::item.short_description}}</p>                                  
+                <p ng-if="item.variables.question"><strong>{{::item.variables.question}}</strong>: {{::item.variables.value}}</p>               
+              </div>
+            </div>
+            <div class="col-xs-4 visible-xs">
+              <input type="number"
+                     title="${Quantity}"
+                     ng-if="c.showQuantity($index)"
+                     class="form-control text-center"
+                     string-to-number
+                     ng-model="item.quantity"
+                     min="1"
+                     max="99"
+                     ng-model-options="{ updateOn: 'blur' }"
+                     ng-change="c.updateQuantity(item)">
+            </div>
+            <div class="col-xs-6 visible-xs">
+              <span ng-if="c.showPrice($index)">&nbsp;&nbsp;&nbsp;{{::item.subtotal_price}}</span>
+              <div ng-if="c.showRecurringPrice($index)">{{c.showPrice($index) ? '+ ' : ' '}} {{item.recurring_subtotal_price + ' ' + item.recurring_frequency}}</div>
+            </div>
+          </td>
+          <td class="break-word hidden-xs wrapper">
+            <span ng-if="c.showPrice($index)">&nbsp;&nbsp;&nbsp;{{::item.price}}</span>
+            <div ng-if="c.showRecurringPrice($index)">{{c.showPrice($index) ? '+ ' : ' '}} {{item.recurring_price + ' ' + item.recurring_frequency}}</div>
+          </td>
+          <td data-th="Quantity" class="break-word hidden-xs wrapper">
+            <input type="number"
+                   title="${Quantity}"
+                   ng-if="c.showQuantity($index)"
+                   class="form-control text-center"
+                   ng-model="item.quantity"
+                   ng-disabled="item.order_guide"
+                   min="1"
+                   max="99"
+                   ng-model-options="{ updateOn: 'blur' }"
+                   ng-change="c.updateQuantity(item)">
+            <span ng-if="!item.show_quantity">-</span>
+          </td>
+          <td class="break-word hidden-xs wrapper">
+            <span ng-if="c.showPrice($index)">&nbsp;&nbsp;&nbsp;{{item.subtotal_price}}</span>
+            <div ng-if="c.showRecurringPrice($index)">{{c.showPrice($index) ? '+ ' : ' '}} {{item.recurring_subtotal_price + ' ' + item.recurring_frequency}}</div>
+          </td>
+          <td class="actions break-word col-xs-1" data-th="">
+            <button class="btn btn-clear" ng-click="c.removeItem($event, item)" aria-label="${Remove Item From Cart} {{::item.name}}" title="${Remove Item} {{::item.name}}">
+              <i class="fa fa-times-circle btn-remove" aria-hidden="true"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="clearfix wrapper">
+      <div class="pull-right m-r-lg m-b-lg" ng-if="c.data.cart.cart_items.show_subtotal_price === 'true'">
+        <div class="pull-left"><strong>${Total price}: </strong></div>
+        <div class="pull-left m-l-sm">
+          <span>&nbsp;&nbsp;&nbsp;{{c.data.cart.cart_items.subtotal_price}}</span>
+          <div ng-repeat="(key, value) in c.data.cart.recurring_subtotals">+ {{value}} {{key}}</div>
+        </div>
+      </div>
+
+      <div class="sc-btn-group">
+        <a href="?id=sc_home" name="submit" class="btn sc-btn btn-default m-r-xs">${Continue Shopping}</a>
+        <button class="btn sc-btn btn-default" ng-click="c.saveBundle()">${Save as Bundle}</button>
+        <button ng-disabled="c.checkoutInProgress" name="submit" ng-click="c.triggerCheckout($event)" class="btn sc-btn btn-primary pull-right">
+          <span ng-show="!c.checkoutInProgress">${Proceed to Checkout}</span>
+          <span ng-show="c.checkoutInProgress">${Ordering...}</span>
+        </button>
+        <button class="btn sc-btn btn-default m-r-xs sc-remove-btn pull-right" ng-click="c.clearCart()">${Clear Cart}</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div ng-show="c.data.cartItems.length == 0" class="panel panel-default b">
+  <div class="panel-body">
+    <div class="empty-state-content">
+      <span class="fa fa-shopping-cart" aria-label="${Shopping cart icon}"></span>
+      <h2 class="h3">${Your shopping cart is empty}</h2>
+      <p>${Once you have added items to your shopping cart, you can check out from here.}</p>
+      <a class="btn btn-primary" href="?id=sc_home">${View the Catalog}</a>
+      <div>
+      </div>
+    </div>
